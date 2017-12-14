@@ -10,7 +10,9 @@ CFLAGS	+= -std=gnu99 -ffreestanding -O2 -Wall -Wextra -Iincludes
 
 CSRCS	:= $(shell find srcs -type f -name "*.c")
 
-CTEMPSRCS	:= $(shell find srcs -type f -name "*~")
+INCLUDES	:= $(shell find includes -type f -name "*.h")
+
+TEMPFILES	:= $(shell find . -type f -name "*~")
 
 ASRCS	:= $(shell find srcs -type f -name "*.asm")
 
@@ -32,16 +34,16 @@ $(NAME): $(COBJS) $(AOBJS)
 
 clean:
 	$(RM) $(COBJS) $(AOBJS)
-	$(RM) $(CTEMPSRCS)
 
 fclean: clean
 	$(RM) $(NAME)
 
 indent:
-	indent $(CSRCS) -nbad -bap -bbo -nbc -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs -nprs -npsl -saf -sai -saw -nsc -nsob -nss -bli0
+	indent $(CSRCS) $(INCLUDES) -nbad -bap -bbo -nbc -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs -nprs -npsl -saf -sai -saw -nsc -nsob -nss -bli0
+	$(RM) $(TEMPFILES)
 
 run:
-	/mnt/c/"Program Files"/qemu/qemu-system-i386.exe -kernel kernel.bin
+	qemu-system-i386 -kernel $(NAME)
 
 re: fclean all
 

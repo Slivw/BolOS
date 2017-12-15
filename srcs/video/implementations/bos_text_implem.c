@@ -8,8 +8,9 @@ void clear_screen(void)
         g_video[count--] = 0;
 }
 
-void set_screen_resolution(s_coords p_position)
+void set_screen_resolution(s_resolution p_resolution)
 {
+    p_resolution = p_resolution;
     // not implemented yet
 }
 
@@ -18,15 +19,23 @@ s_resolution get_screen_resolution(void)
     return (g_resolution);
 }
 
-void print_char(char p_char, void *p_parameters, s_coords p_position)
+int print_char(char p_char, void *p_parameters, s_coords p_position)
 {
-    byte offset = 2;
+    s_resolution screen_resolution = i_abstract_video_api.get_screen_resolution();
 
-    int coord = (p_position.x + (p_position.y * 80)) * offset;
+    if (p_position.y > screen_resolution.y || p_position.y < 0
+    || p_position.x > screen_resolution.x || p_position.x < 0)
+    {
+        return BOS_ERR_TRY_PRINT_OUT_OF_SCREEN;
+    }
+
+    int coord = ((p_position.y * screen_resolution.x) + p_position.x) * 2;
     char* param = p_parameters;
 
     g_video[coord] = p_char;
-    g_video[coord + 1] = *param;    
+    g_video[coord + 1] = param[0];
+
+    return BOS_OK;
 }
 
 void clear_area(s_coords p_position, s_size p_size)
@@ -40,31 +49,32 @@ void clear_area(s_coords p_position, s_size p_size)
         p_position.y = initial_y;
         while (p_position.y < initial_y + p_size.y)
         {
-            i_abstract_video_api.print_char('\0', &char_data, p_position);
+            print_char('\0', &char_data, p_position);
             p_position.y++;
         }
         p_position.x++;
     }
 }
 
-void init_driver()
+void init_driver(s_abstract_video_api *p_abstract_api)
 {
-    i_abstract_video_api.set_screen_resolution = set_screen_resolution;
-    i_abstract_video_api.get_screen_resolution = get_screen_resolution;
-    i_abstract_video_api.print_char = print_char;
-    i_abstract_video_api.clear_screen = clear_screen;
-    i_abstract_video_api.clear_area = clear_area;
+    (*p_abstract_api).set_screen_resolution = set_screen_resolution;
+    (*p_abstract_api).get_screen_resolution = get_screen_resolution;
+    (*p_abstract_api).print_char = print_char;
+    (*p_abstract_api).clear_screen = clear_screen;
+    (*p_abstract_api).clear_area = clear_area;
 
+    g_video_type = TEXT;
     g_video = (char*)0xB8000;
     g_resolution.x = 80;
     g_resolution.y = 25;
 }
 
-void dinit_driver()
+void dinit_driver(s_abstract_video_api *p_abstract_api)
 {
-    i_abstract_video_api.set_screen_resolution = NULL;
-    i_abstract_video_api.get_screen_resolution = NULL;
-    i_abstract_video_api.print_char = NULL;
-    i_abstract_video_api.clear_screen = NULL;
-    i_abstract_video_api.clear_area = NULL;
+    (*p_abstract_api).set_screen_resolution = NULL;
+    (*p_abstract_api).get_screen_resolution = NULL;
+    (*p_abstract_api).print_char = NULL;
+    (*p_abstract_api).clear_screen = NULL;
+    (*p_abstract_api).clear_area = NULL;
 }

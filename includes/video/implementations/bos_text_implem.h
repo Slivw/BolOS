@@ -5,20 +5,25 @@
 
 char* g_video;
 s_resolution g_resolution;
+byte g_video_type;
 
 typedef struct
 {
     char color;
 } s_char_parameter;
 
-void set_screen_resolution(s_coords p_position);
+void set_screen_resolution(s_resolution p_resolution);
 s_resolution get_screen_resolution(void);
 
-void print_char(char p_char, void *p_parameters, s_coords p_position);
+int print_char(char p_char, void *p_parameters, s_coords p_position);
 
 void clear_screen(void);
 
 void clear_area(s_coords p_position, s_coords p_size);
+
+void init_driver(s_abstract_video_api *p_abstract_api);
+
+void dinit_driver(s_abstract_video_api *p_abstract_api);
 
 s_abstract_video_api i_abstract_video_api;
 

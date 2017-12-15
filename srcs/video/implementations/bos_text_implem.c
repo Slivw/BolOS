@@ -2,7 +2,7 @@
 
 void clear_screen(void) 
 {
-    int count = (g_resolution.x + g_resolution.y * 80) * 2;
+    int count = (g_resolution.x + g_resolution.y * get_screen_resolution().x) * 2;
 
     while (count >= 0)
         g_video[count--] = 0;
@@ -21,7 +21,7 @@ s_resolution get_screen_resolution(void)
 
 int print_char(char p_char, void *p_parameters, s_coords p_position)
 {
-    s_resolution screen_resolution = i_abstract_video_api.get_screen_resolution();
+    s_resolution screen_resolution = get_screen_resolution();
 
     if (p_position.y > screen_resolution.y || p_position.y < 0
     || p_position.x > screen_resolution.x || p_position.x < 0)
@@ -65,9 +65,9 @@ void init_driver(s_abstract_video_api *p_abstract_api)
     (*p_abstract_api).clear_area = clear_area;
 
     g_video_type = TEXT;
-    g_video = (char*)0xB8000;
-    g_resolution.x = 80;
-    g_resolution.y = 25;
+    g_video = VIDEO_MEM_ADDR;
+    g_resolution.x = LINE_LENGTH;
+    g_resolution.y = COLLUMN_NBR;
 }
 
 void dinit_driver(s_abstract_video_api *p_abstract_api)

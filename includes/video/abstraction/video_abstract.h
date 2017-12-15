@@ -29,4 +29,6 @@ typedef struct
     void (*clear_area)(s_coords p_position, s_size p_size);
 } s_abstract_video_api;
 
+s_abstract_video_api i_abstract_video_api;
+
 #endif

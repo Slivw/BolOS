@@ -1,6 +1,8 @@
 #ifndef PIC_H_
 #define PIC_H_
 
+#include "io/io.h"
+
 #define PIC1		0x20
 #define PIC2		0xA0
 
@@ -21,6 +23,6 @@
  
 #define PIC2_EOF_INT outb(PIC2,PIC_EOI)
 
-void init_pic();
+void pic_init();
 
 #endif

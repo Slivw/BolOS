@@ -7,7 +7,7 @@ void segmentation_load()
     segmentation_init((s_segments *) BOS_SEGMENTATION_ADDRESS);
     gdt.base = BOS_SEGMENTATION_ADDRESS;
     gdt.limit = sizeof(s_segments);
-    asm("LGDTL %0":"=g"(gdt));
+    asm ("LGDT %0" :: "g" (gdt));
     asm("MOVW $0x10, %ax");
     asm("MOVW %ax, %ds");
     asm("MOVW %ax, %ss");
@@ -16,21 +16,17 @@ void segmentation_load()
     asm("MOVW %ax, %gs");
     asm("LJMP $0x8, $kcode\n \
         kcode:");
-    while (1);
 }
 
 void segmentation_init(s_segments *segments)
 {
     segmentation_entry(&segments->empty, 0, 0, 0, 0);
     segmentation_entry(&segments->kernel_code, 0, BOS_HANDLED_MEMORY,
-		       segmentation_access(0, 1, 0, 1),
-               segmentation_flags(1, 1));
+		       0x9B,
+               0x0D);
     segmentation_entry(&segments->kernel_data, 0, BOS_HANDLED_MEMORY,
-		       segmentation_access(0, 0, 0, 1),
-		       segmentation_flags(1, 1));
-    segmentation_entry(&segments->kernel_stack, 0, BOS_HANDLED_MEMORY,
-		       segmentation_access(0, 1, 0, 1),
-		       segmentation_flags(1, 1));
+		       0x93,
+		       0x0D);
 }
 
 void segmentation_entry(s_gdt_entry *p_entry, u32 p_base, u32 p_limit, u8 p_access,
@@ -40,7 +36,8 @@ void segmentation_entry(s_gdt_entry *p_entry, u32 p_base, u32 p_limit, u8 p_acce
     p_entry->base0_15 = (p_base & 0xFFFF);
     p_entry->base16_23 = (p_base & 0xFF0000) >> 16;
     p_entry->access = p_access;
-    p_entry->limit16_19_flags = (p_limit & 0xFFF00000) >> 16 | (p_flags & 0xF);
+    p_entry->limit16_19 = (p_limit & 0xf0000) >> 16;
+    p_entry->flags = (p_flags & 0xf);
     p_entry->base24_31 = (p_base & 0xFF000000) >> 24;
 }
 
@@ -55,6 +52,7 @@ u8 segmentation_access(u8 p_privilege, u8 p_executable, u8 p_direction,
     access |= p_executable << 4;
     access |= p_direction << 5;
     access |= p_rw << 6;
+    access |= 1 << 7;
     return (access);
 }
 
@@ -64,5 +62,7 @@ u8 segmentation_flags(u8 p_granu, u8 p_size)
 
     flags |= p_granu & 0xF;
     flags |= (p_size << 1) & 0xF;
+    flags |= 0 << 2;
+    flags |= 1 << 3;
     return (flags);
 }

@@ -3,8 +3,8 @@
 
 #include "types.h"
 
-#define BOS_HANDLED_MEMORY          0xFFFFFFFF
-#define BOS_SEGMENTATION_ADDRESS    0x3FC0
+#define BOS_HANDLED_MEMORY          0xFFFFF
+#define BOS_SEGMENTATION_ADDRESS    0x4000
 
 typedef struct {
     u16 limit;
@@ -16,7 +16,8 @@ typedef struct {
     u16 base0_15;
     u8 base16_23;
     u8 access;
-    u8 limit16_19_flags;
+    u8 limit16_19:4;
+    u8 flags:4;
     u8 base24_31;
 } __attribute__ ((packed)) s_gdt_entry;
 
@@ -24,7 +25,6 @@ typedef struct {
     s_gdt_entry empty;
     s_gdt_entry kernel_code;
     s_gdt_entry kernel_data;
-    s_gdt_entry kernel_stack;
 } __attribute__ ((packed)) s_segments;
 
 

@@ -38,8 +38,8 @@ void segmentation_load();
 */
 void segmentation_init(s_segments *);
 
-void segmentation_entry(s_gdt_entry* p_entry, u32 p_base, u32 p_limit, u8 p_access,
-			u8 p_flags);
+void segmentation_entry(s_gdt_entry * p_entry, u32 p_base, u32 p_limit,
+			u8 p_access, u8 p_flags);
 u8 segmentation_access(u8 p_privilege, u8 p_executable, u8 p_direction,
 		       u8 p_rw);
 u8 segmentation_flags(u8 p_granu, u8 p_size);

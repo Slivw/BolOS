@@ -2,7 +2,7 @@ CC	:= i686-elf-gcc
 
 ASM	:= nasm
 
-RM	:= rm -rf
+RM	:= rm -f
 
 LDFLAGS	+= -lgcc -ffreestanding -O2 -nostdlib
 

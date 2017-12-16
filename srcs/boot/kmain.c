@@ -6,13 +6,13 @@
 #include "kernel_utils/motd.h"
 
 
-void bos_kmain(s_boot_info* p_bif)
+void bos_kmain(s_boot_info * p_bif)
 {
     p_bif = p_bif;
     pic_init();
     idt_init();
     //sti;
-  
+
     init_driver(&i_abstract_video_api);
     i_abstract_video_api.clear_screen();
     byte param = 0x5;
